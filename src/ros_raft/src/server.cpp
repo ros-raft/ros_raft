@@ -14,12 +14,6 @@
 
 #include "ros_raft/server.hpp"
 
-RosRaft::Server::Server()
-{
-  std::cout << "Created server!" << std::endl;
-}
+ros_raft::Server::Server() : rclcpp::Node("test") { std::cout << "Created server!" << std::endl; }
 
-void RosRaft::Server::DoWork()
-{
-  std::cout << "Doing work!" << std::endl;
-}
+void ros_raft::Server::DoWork() { std::cout << "Doing work!" << std::endl; }

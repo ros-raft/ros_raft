@@ -12,6 +12,8 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(GTest CONFIG REQUIRED)
 
 include_directories(
   include
@@ -21,7 +23,10 @@ set(EXECUTABLE_NAME "ros_raft_server")
 set(LIBRARY_NAME "${EXECUTABLE_NAME}-core")
 
 # Create core library
-add_library(${LIBRARY_NAME} src/server.cpp)
+add_library(${LIBRARY_NAME}
+  src/server.cpp
+  src/state_machine.cpp
+)
 
 # Create executable
 add_executable(${EXECUTABLE_NAME} src/main.cpp)
@@ -30,6 +35,8 @@ add_executable(${EXECUTABLE_NAME} src/main.cpp)
 # Link the core library to the executable
 target_link_libraries(${EXECUTABLE_NAME} ${LIBRARY_NAME})
 
+
+ament_target_dependencies(${LIBRARY_NAME} rclcpp)
 
 # Install library and executable
 install(TARGETS ${LIBRARY_NAME}
@@ -43,6 +50,9 @@ install(TARGETS ${EXECUTABLE_NAME}
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
+
+  find_package(ament_cmake_gtest REQUIRED)
+  add_subdirectory(test)
 endif()
 
 ament_package()

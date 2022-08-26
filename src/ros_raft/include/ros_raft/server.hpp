@@ -17,17 +17,23 @@
 
 #include <iostream>
 
-namespace RosRaft
+#include "rclcpp/rclcpp.hpp"
+#include "ros_raft/state_machine.hpp"
+
+namespace ros_raft
 {
 
-class Server
+class Server : public rclcpp::Node
 {
 public:
   Server();
 
   void DoWork();
+
+private:
+  RaftStateMachine current_state_;
 };
 
-}  // namespace RosRaft
+}  // namespace ros_raft
 
 #endif  // ROS_RAFT__SERVER_HPP_

@@ -12,12 +12,14 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#include <iostream>
+#ifndef ROS_RAFT__NODE_STATE_HPP_
+#define ROS_RAFT__NODE_STATE_HPP_
 
-#include "ros_raft/server.hpp"
-
-int main()
+namespace ros_raft
 {
-  auto srv = ros_raft::Server();
-  srv.DoWork();
-}
+
+enum NodeState { FOLLOWER, CANDIDATE, LEADER };
+
+}  // namespace ros_raft
+
+#endif  // ROS_RAFT__NODE_STATE_HPP_
