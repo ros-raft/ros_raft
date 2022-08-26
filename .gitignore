@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# ROS2 artifacts
+build
+install
+log
+
+# VSCode Directories
+.vscode
