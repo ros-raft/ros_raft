@@ -15,14 +15,17 @@
 #include "ros_raft/state_machine.hpp"
 
 // Create the map of valid transitions between states
-const std::map<ros_raft::NodeState, std::vector<ros_raft::NodeState>>
+const std::unordered_map<ros_raft::NodeState, std::vector<ros_raft::NodeState>>
   ros_raft::RaftStateMachine::kTransition_map_ = {
     {ros_raft::NodeState::FOLLOWER, {ros_raft::NodeState::CANDIDATE}},
     {ros_raft::NodeState::CANDIDATE,
      {ros_raft::NodeState::FOLLOWER, ros_raft::NodeState::CANDIDATE, ros_raft::NodeState::LEADER}},
     {ros_raft::NodeState::LEADER, {ros_raft::NodeState::FOLLOWER}}};
 
-ros_raft::RaftStateMachine::RaftStateMachine() : current_state_(ros_raft::NodeState::FOLLOWER) {}
+ros_raft::RaftStateMachine::RaftStateMachine()
+: transition_callback_map_(), current_state_(ros_raft::NodeState::FOLLOWER)
+{
+}
 
 ros_raft::NodeState ros_raft::RaftStateMachine::GetState() const
 {
@@ -45,6 +48,15 @@ bool ros_raft::RaftStateMachine::TransitionState(const ros_raft::NodeState & sta
     return false;
   }
 
+  const auto transition = ros_raft::StateTransition(current_state_, state);
+
+  try {
+    auto callback = transition_callback_map_.at(transition);
+    callback(transition);
+  } catch (const std::out_of_range & e) {
+    // callback not registered
+  }
+
   current_state_ = state;
   return true;
 }
@@ -62,5 +74,17 @@ std::vector<ros_raft::NodeState> ros_raft::RaftStateMachine::GetValidTransitions
     return kTransition_map_.at(state);
   } catch (const std::out_of_range & e) {
     return {};
+  }
+}
+
+void ros_raft::RaftStateMachine::RegisterTransitionCallback(
+  const ros_raft::StateTransition & transition, ros_raft::StateTransitionCallback callback)
+{
+  const auto callback_itr = transition_callback_map_.find(transition);
+  if (callback_itr == transition_callback_map_.end()) {
+    transition_callback_map_.emplace(transition, callback);
+  } else {
+    transition_callback_map_.erase(callback_itr);
+    transition_callback_map_.emplace(transition, callback);
   }
 }

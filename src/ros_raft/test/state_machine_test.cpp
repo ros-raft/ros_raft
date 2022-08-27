@@ -35,9 +35,9 @@ TEST_F(StateMachineTest, RegistersValidStateTransitions)
   const auto c_trans = sm_.GetValidTransitions(ros_raft::NodeState::CANDIDATE);
   const auto l_trans = sm_.GetValidTransitions(ros_raft::NodeState::LEADER);
 
-  ASSERT_EQ(f_trans.size(), 1);
-  ASSERT_EQ(c_trans.size(), 3);
-  ASSERT_EQ(l_trans.size(), 1);
+  ASSERT_EQ(f_trans.size(), std::size_t(1));
+  ASSERT_EQ(c_trans.size(), std::size_t(3));
+  ASSERT_EQ(l_trans.size(), std::size_t(1));
 
   ASSERT_NE(
     std::find(f_trans.begin(), f_trans.end(), ros_raft::NodeState::CANDIDATE), f_trans.end());
@@ -77,9 +77,6 @@ TEST_F(StateMachineTest, ValidTransitionsSucceed)
 
 TEST_F(StateMachineTest, InvalidTransitionsFail)
 {
-  // Make sure we know what state we're in
-  ASSERT_EQ(sm_.GetState(), ros_raft::NodeState::FOLLOWER);
-
   ASSERT_FALSE(sm_.TransitionState(ros_raft::NodeState::LEADER));
   ASSERT_FALSE(sm_.TransitionState(ros_raft::NodeState::FOLLOWER));
 
@@ -93,4 +90,34 @@ TEST_F(StateMachineTest, InvalidTransitionsFail)
 
   ASSERT_FALSE(sm_.TransitionState(ros_raft::NodeState::CANDIDATE));
   ASSERT_FALSE(sm_.TransitionState(ros_raft::NodeState::LEADER));
+}
+
+TEST_F(StateMachineTest, TransitionCallbacksTriggerWithValidTransition)
+{
+  bool callbackHit = false;
+
+  sm_.RegisterTransitionCallback(
+    ros_raft::StateTransition(ros_raft::NodeState::FOLLOWER, ros_raft::NodeState::CANDIDATE),
+    [&callbackHit](const ros_raft::StateTransition & state) {
+      callbackHit = true;
+      ASSERT_EQ(state.first, ros_raft::NodeState::CANDIDATE);
+      ASSERT_EQ(state.second, ros_raft::NodeState::CANDIDATE);
+    });
+
+  sm_.TransitionState(ros_raft::NodeState::CANDIDATE);
+
+  ASSERT_TRUE(callbackHit);
+}
+
+TEST_F(StateMachineTest, TransitionCallbackNoTriggerWithInvalidTransition)
+{
+  bool callbackHit = false;
+
+  sm_.RegisterTransitionCallback(
+    ros_raft::StateTransition(ros_raft::NodeState::CANDIDATE, ros_raft::NodeState::CANDIDATE),
+    [&callbackHit](const ros_raft::StateTransition & state) { callbackHit = true; });
+
+  sm_.TransitionState(ros_raft::NodeState::CANDIDATE);
+
+  ASSERT_FALSE(callbackHit);
 }

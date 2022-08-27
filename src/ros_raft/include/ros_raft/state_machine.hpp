@@ -13,10 +13,12 @@
 //    limitations under the License.
 
 #include <algorithm>
+#include <functional>
 #include <map>
 #include <mutex>
 #include <shared_mutex>
 #include <stdexcept>
+#include <unordered_map>
 #include <vector>
 
 #include "ros_raft/node_state.hpp"
@@ -26,6 +28,9 @@
 
 namespace ros_raft
 {
+
+typedef std::pair<ros_raft::NodeState, ros_raft::NodeState> StateTransition;
+typedef std::function<void(const StateTransition & transition)> StateTransitionCallback;
 
 class RaftStateMachine
 {
@@ -69,8 +74,13 @@ public:
    */
   bool TransitionState(const NodeState & newState);
 
+  void RegisterTransitionCallback(
+    const StateTransition & transition, StateTransitionCallback callback);
+
 private:
-  static const std::map<NodeState, std::vector<NodeState>> kTransition_map_;
+  static const std::unordered_map<NodeState, std::vector<NodeState>> kTransition_map_;
+
+  std::map<StateTransition, StateTransitionCallback> transition_callback_map_;
 
   mutable std::shared_mutex state_mtx_;
 
