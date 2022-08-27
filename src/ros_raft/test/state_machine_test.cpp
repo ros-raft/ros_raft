@@ -100,7 +100,7 @@ TEST_F(StateMachineTest, TransitionCallbacksTriggerWithValidTransition)
     ros_raft::StateTransition(ros_raft::NodeState::FOLLOWER, ros_raft::NodeState::CANDIDATE),
     [&callbackHit](const ros_raft::StateTransition & state) {
       callbackHit = true;
-      ASSERT_EQ(state.first, ros_raft::NodeState::CANDIDATE);
+      ASSERT_EQ(state.first, ros_raft::NodeState::FOLLOWER);
       ASSERT_EQ(state.second, ros_raft::NodeState::CANDIDATE);
     });
 
