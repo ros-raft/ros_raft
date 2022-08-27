@@ -50,11 +50,9 @@ bool ros_raft::RaftStateMachine::TransitionState(const ros_raft::NodeState & sta
 
   const auto transition = ros_raft::StateTransition(current_state_, state);
 
-  try {
-    auto callback = transition_callback_map_.at(transition);
-    callback(transition);
-  } catch (const std::out_of_range & e) {
-    // callback not registered
+  const auto trans_callback = transition_callback_map_.find(transition);
+  if (trans_callback != transition_callback_map_.end()) {
+    trans_callback->second(transition);
   }
 
   current_state_ = state;
@@ -70,11 +68,11 @@ std::vector<ros_raft::NodeState> ros_raft::RaftStateMachine::GetValidTransitions
 std::vector<ros_raft::NodeState> ros_raft::RaftStateMachine::GetValidTransitions(
   const ros_raft::NodeState & state) const
 {
-  try {
-    return kTransition_map_.at(state);
-  } catch (const std::out_of_range & e) {
-    return {};
+  const auto transitions = kTransition_map_.find(state);
+  if (transitions != kTransition_map_.end()) {
+    return transitions->second;
   }
+  return {};
 }
 
 void ros_raft::RaftStateMachine::RegisterTransitionCallback(
