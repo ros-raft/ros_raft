@@ -75,6 +75,12 @@ public:
    */
   bool TransitionState(const NodeState & newState);
 
+  /**
+   * @brief Registers a callback to be triggered when a specific transition occurs.
+   * 
+   * @param transition StateTransition that will trigger @p callback.
+   * @param callback StateTransitionCallback to run when the statemachine goes through the @p transition transition.
+   */
   void RegisterTransitionCallback(
     const StateTransition & transition, StateTransitionCallback callback);
 

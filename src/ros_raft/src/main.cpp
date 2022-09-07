@@ -16,8 +16,13 @@
 
 #include "ros_raft/server.hpp"
 
-int main()
+int main(int argc, char **argv)
 {
-  auto srv = ros_raft::Server();
-  srv.DoWork();
+  rclcpp::init(argc, argv);
+  auto srv = std::make_shared<ros_raft::Server>();
+
+  rclcpp::spin(srv);
+
+  rclcpp::shutdown();
+  return 0;
 }

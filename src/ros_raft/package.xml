@@ -11,6 +11,8 @@
 
   <build_depend>rclcpp</build_depend>
 
+  <depend>ros_raft_interfaces</depend>
+
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_cmake_clang_format</test_depend>
   <test_depend>ament_cmake_cpplint</test_depend>

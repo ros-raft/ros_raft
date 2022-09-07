@@ -1,0 +1,9 @@
+uint64 term
+uint64 leader_id
+uint64 prev_log_index
+uint64 prev_log_term
+string[] entries
+uint64 leader_commit
+---
+uint64 term
+bool success

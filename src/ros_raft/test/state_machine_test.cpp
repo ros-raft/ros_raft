@@ -63,16 +63,22 @@ TEST_F(StateMachineTest, ValidTransitionsSucceed)
 {
   // Follower -> Candidate
   ASSERT_TRUE(sm_.TransitionState(ros_raft::NodeState::CANDIDATE));
+  ASSERT_EQ(sm_.GetState(), ros_raft::NodeState::CANDIDATE);
   // Candidate -> Candidate
   ASSERT_TRUE(sm_.TransitionState(ros_raft::NodeState::CANDIDATE));
+  ASSERT_EQ(sm_.GetState(), ros_raft::NodeState::CANDIDATE);
   // Candidate -> Follower
   ASSERT_TRUE(sm_.TransitionState(ros_raft::NodeState::FOLLOWER));
+  ASSERT_EQ(sm_.GetState(), ros_raft::NodeState::FOLLOWER);
   // Follower -> Candidate (again)
   ASSERT_TRUE(sm_.TransitionState(ros_raft::NodeState::CANDIDATE));
+  ASSERT_EQ(sm_.GetState(), ros_raft::NodeState::CANDIDATE);
   // Candidate -> Leader
   ASSERT_TRUE(sm_.TransitionState(ros_raft::NodeState::LEADER));
+  ASSERT_EQ(sm_.GetState(), ros_raft::NodeState::LEADER);
   // Leader -> Follower
   ASSERT_TRUE(sm_.TransitionState(ros_raft::NodeState::FOLLOWER));
+  ASSERT_EQ(sm_.GetState(), ros_raft::NodeState::FOLLOWER);
 }
 
 TEST_F(StateMachineTest, InvalidTransitionsFail)
@@ -115,7 +121,10 @@ TEST_F(StateMachineTest, TransitionCallbackNoTriggerWithInvalidTransition)
 
   sm_.RegisterTransitionCallback(
     ros_raft::StateTransition(ros_raft::NodeState::CANDIDATE, ros_raft::NodeState::CANDIDATE),
-    [&callbackHit](const ros_raft::StateTransition & state) { callbackHit = true; });
+    [&callbackHit](const ros_raft::StateTransition & state) { 
+      (void)state; // silence warnings
+      callbackHit = true; 
+    });
 
   sm_.TransitionState(ros_raft::NodeState::CANDIDATE);
 
