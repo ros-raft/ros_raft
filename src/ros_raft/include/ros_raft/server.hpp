@@ -16,14 +16,13 @@
 #define ROS_RAFT__SERVER_HPP_
 
 #include <iostream>
+#include <memory>
 
-#include "rclcpp/rclcpp.hpp"
 #include "rclcpp/logger.hpp"
-
+#include "rclcpp/rclcpp.hpp"
 #include "ros_raft/state_machine.hpp"
-
-#include "ros_raft_interfaces/srv/request_vote.hpp"
 #include "ros_raft_interfaces/srv/append_entries.hpp"
+#include "ros_raft_interfaces/srv/request_vote.hpp"
 
 namespace ros_raft
 {
@@ -32,7 +31,6 @@ class Server : public rclcpp::Node
 {
 public:
   Server();
-
 
 private:
   RaftStateMachine state_machine_;
@@ -92,7 +90,8 @@ private:
    * 
    * @param future 
    */
-  void appendEntriesClientCallback(rclcpp::Client<ros_raft_interfaces::srv::RequestVote>::SharedFuture future);
+  void appendEntriesClientCallback(
+    rclcpp::Client<ros_raft_interfaces::srv::RequestVote>::SharedFuture future);
 
   /**
    * @brief Callback for AppendEntries RPC requests
@@ -104,8 +103,7 @@ private:
   void appendEntriesCallback(
     const std::shared_ptr<rmw_request_id_t> req_header,
     const std::shared_ptr<ros_raft_interfaces::srv::AppendEntries::Request> request,
-    std::shared_ptr<ros_raft_interfaces::srv::AppendEntries::Response> response
-  );
+    std::shared_ptr<ros_raft_interfaces::srv::AppendEntries::Response> response);
 
   /**
    * @brief Callback for RequestVote RPC requests
@@ -117,9 +115,7 @@ private:
   void requestVoteCallback(
     const std::shared_ptr<rmw_request_id_t> req_header,
     const std::shared_ptr<ros_raft_interfaces::srv::RequestVote::Request> request,
-    std::shared_ptr<ros_raft_interfaces::srv::RequestVote::Response> response
-  );
-
+    std::shared_ptr<ros_raft_interfaces::srv::RequestVote::Response> response);
 };
 
 }  // namespace ros_raft

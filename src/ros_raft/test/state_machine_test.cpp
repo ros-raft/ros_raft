@@ -121,9 +121,9 @@ TEST_F(StateMachineTest, TransitionCallbackNoTriggerWithInvalidTransition)
 
   sm_.RegisterTransitionCallback(
     ros_raft::StateTransition(ros_raft::NodeState::CANDIDATE, ros_raft::NodeState::CANDIDATE),
-    [&callbackHit](const ros_raft::StateTransition & state) { 
-      (void)state; // silence warnings
-      callbackHit = true; 
+    [&callbackHit](const ros_raft::StateTransition & state) {
+      (void)state;  // silence warnings
+      callbackHit = true;
     });
 
   sm_.TransitionState(ros_raft::NodeState::CANDIDATE);
