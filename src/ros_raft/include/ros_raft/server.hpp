@@ -33,17 +33,69 @@ class Server : public rclcpp::Node
 public:
   Server();
 
-private:
-  RaftStateMachine current_state_;
 
+private:
+  RaftStateMachine state_machine_;
+
+  uint64_t candidate_id_;
+  uint64_t current_term_;
+
+  /**
+   * @brief Callback group for all services
+   */
+  rclcpp::CallbackGroup::SharedPtr srv_cb_group_;
+  /**
+   * @brief Callback group for all clients
+   */
+  rclcpp::CallbackGroup::SharedPtr cli_cb_group_;
+  /**
+   * @brief Callback group for the election timer
+   */
+  rclcpp::CallbackGroup::SharedPtr tmr_cb_group_;
+
+  /**
+   * @brief Service that handles AppendEntries RPC calls from other servers
+   */
   rclcpp::Service<ros_raft_interfaces::srv::AppendEntries>::SharedPtr append_entries_srv_;
+  /**
+   * @brief Service that handles RequestVote RPC calls from other servers
+   */
   rclcpp::Service<ros_raft_interfaces::srv::RequestVote>::SharedPtr request_vote_srv_;
 
+  /**
+   * @brief Client for making AppendEntries RPC calls to other servers
+   */
   rclcpp::Client<ros_raft_interfaces::srv::AppendEntries>::SharedPtr append_entries_client_;
+  /**
+   * @brief Client for making RequestVote RPC calls to other servers
+   */
   rclcpp::Client<ros_raft_interfaces::srv::RequestVote>::SharedPtr request_vote_client_;
 
   /**
-   * @brief Callback for AppendEntries RPC
+   * @brief Timer that handles starting new elections.
+   */
+  rclcpp::TimerBase::SharedPtr election_timer_;
+
+  /**
+   * @brief Registers all of the valid transition callbacks for the
+   * internal state machine
+   */
+  void registerTransitions();
+
+  /**
+   * @brief Callback that gets triggered when the election timer expires.
+   */
+  void electionTimerCallback();
+
+  /**
+   * @brief Callback that handles the response from an AppendEntries RPC request
+   * 
+   * @param future 
+   */
+  void appendEntriesClientCallback(rclcpp::Client<ros_raft_interfaces::srv::RequestVote>::SharedFuture future);
+
+  /**
+   * @brief Callback for AppendEntries RPC requests
    * 
    * @param req_header Request header. Ignored
    * @param request Request from leader
@@ -56,7 +108,7 @@ private:
   );
 
   /**
-   * @brief Callback for RequestVote RPC
+   * @brief Callback for RequestVote RPC requests
    * 
    * @param req_header Request header. Ignored
    * @param request Request from candidates

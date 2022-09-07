@@ -21,7 +21,14 @@ int main(int argc, char **argv)
   rclcpp::init(argc, argv);
   auto srv = std::make_shared<ros_raft::Server>();
 
-  rclcpp::spin(srv);
+  auto exec = rclcpp::executors::MultiThreadedExecutor();
+  exec.add_node(srv);
+
+
+  while (rclcpp::ok())
+  {
+    exec.spin_once();
+  }
 
   rclcpp::shutdown();
   return 0;
