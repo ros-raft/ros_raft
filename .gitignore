@@ -37,4 +37,4 @@ install
 log
 
 # VSCode Directories
-.vscode
+.vscode/

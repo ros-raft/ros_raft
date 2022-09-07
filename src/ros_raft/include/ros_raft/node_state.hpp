@@ -12,22 +12,14 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#include <iostream>
+#ifndef ROS_RAFT__NODE_STATE_HPP_
+#define ROS_RAFT__NODE_STATE_HPP_
 
-#include "ros_raft/server.hpp"
-
-int main(int argc, char ** argv)
+namespace ros_raft
 {
-  rclcpp::init(argc, argv);
-  auto srv = std::make_shared<ros_raft::Server>();
 
-  auto exec = rclcpp::executors::MultiThreadedExecutor();
-  exec.add_node(srv);
+enum NodeState { FOLLOWER, CANDIDATE, LEADER };
 
-  while (rclcpp::ok()) {
-    exec.spin_once();
-  }
+}  // namespace ros_raft
 
-  rclcpp::shutdown();
-  return 0;
-}
+#endif  // ROS_RAFT__NODE_STATE_HPP_
