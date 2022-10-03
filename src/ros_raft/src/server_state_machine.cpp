@@ -12,7 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#include "ros_raft/state_machine.hpp"
+#include "ros_raft/server_state_machine.hpp"
 
 // Create the map of valid transitions between states
 const std::unordered_map<ros_raft::NodeState, std::vector<ros_raft::NodeState>>

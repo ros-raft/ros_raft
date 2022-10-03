@@ -26,7 +26,7 @@ set(LIBRARY_NAME "${EXECUTABLE_NAME}-core")
 # Create core library
 add_library(${LIBRARY_NAME}
   src/server.cpp
-  src/state_machine.cpp
+  src/server_state_machine.cpp
 )
 
 # Create executable

@@ -12,24 +12,24 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#include "ros_raft/state_machine.hpp"
+#include "ros_raft/server_state_machine.hpp"
 
 #include <algorithm>
 
 #include "gtest/gtest.h"
 
-class StateMachineTest : public ::testing::Test
+class ServerStateMachineTest : public ::testing::Test
 {
 protected:
   ros_raft::RaftStateMachine sm_;
 };
 
-TEST_F(StateMachineTest, InitializesToFollower)
+TEST_F(ServerStateMachineTest, InitializesToFollower)
 {
   ASSERT_EQ(sm_.GetState(), ros_raft::NodeState::FOLLOWER);
 }
 
-TEST_F(StateMachineTest, RegistersValidStateTransitions)
+TEST_F(ServerStateMachineTest, RegistersValidStateTransitions)
 {
   const auto f_trans = sm_.GetValidTransitions(ros_raft::NodeState::FOLLOWER);
   const auto c_trans = sm_.GetValidTransitions(ros_raft::NodeState::CANDIDATE);
@@ -52,14 +52,14 @@ TEST_F(StateMachineTest, RegistersValidStateTransitions)
     std::find(l_trans.begin(), l_trans.end(), ros_raft::NodeState::FOLLOWER), l_trans.end());
 }
 
-TEST_F(StateMachineTest, InvalidStateTransitionsNoThrow)
+TEST_F(ServerStateMachineTest, InvalidStateTransitionsNoThrow)
 {
   // Deliberately cast invalid enum values to attempt to force an exception
   ASSERT_NO_THROW(sm_.GetValidTransitions(static_cast<ros_raft::NodeState>(-1)));
   ASSERT_NO_THROW(sm_.GetValidTransitions(static_cast<ros_raft::NodeState>(5)));
 }
 
-TEST_F(StateMachineTest, ValidTransitionsSucceed)
+TEST_F(ServerStateMachineTest, ValidTransitionsSucceed)
 {
   // Follower -> Candidate
   ASSERT_TRUE(sm_.TransitionState(ros_raft::NodeState::CANDIDATE));
@@ -81,7 +81,7 @@ TEST_F(StateMachineTest, ValidTransitionsSucceed)
   ASSERT_EQ(sm_.GetState(), ros_raft::NodeState::FOLLOWER);
 }
 
-TEST_F(StateMachineTest, InvalidTransitionsFail)
+TEST_F(ServerStateMachineTest, InvalidTransitionsFail)
 {
   ASSERT_FALSE(sm_.TransitionState(ros_raft::NodeState::LEADER));
   ASSERT_FALSE(sm_.TransitionState(ros_raft::NodeState::FOLLOWER));
@@ -98,7 +98,7 @@ TEST_F(StateMachineTest, InvalidTransitionsFail)
   ASSERT_FALSE(sm_.TransitionState(ros_raft::NodeState::LEADER));
 }
 
-TEST_F(StateMachineTest, TransitionCallbacksTriggerWithValidTransition)
+TEST_F(ServerStateMachineTest, TransitionCallbacksTriggerWithValidTransition)
 {
   bool callbackHit = false;
 
@@ -115,7 +115,7 @@ TEST_F(StateMachineTest, TransitionCallbacksTriggerWithValidTransition)
   ASSERT_TRUE(callbackHit);
 }
 
-TEST_F(StateMachineTest, TransitionCallbackNoTriggerWithInvalidTransition)
+TEST_F(ServerStateMachineTest, TransitionCallbackNoTriggerWithInvalidTransition)
 {
   bool callbackHit = false;
 

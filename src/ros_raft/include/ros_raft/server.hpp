@@ -21,7 +21,7 @@
 
 #include "rclcpp/logger.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "ros_raft/state_machine.hpp"
+#include "ros_raft/server_state_machine.hpp"
 #include "ros_raft/log_entry.hpp"
 #include "ros_raft_interfaces/srv/append_entries.hpp"
 #include "ros_raft_interfaces/srv/request_vote.hpp"

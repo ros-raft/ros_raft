@@ -24,8 +24,8 @@
 
 #include "ros_raft/node_state.hpp"
 
-#ifndef ROS_RAFT__STATE_MACHINE_HPP_
-#define ROS_RAFT__STATE_MACHINE_HPP_
+#ifndef ROS_RAFT__SERVER_STATE_MACHINE_HPP_
+#define ROS_RAFT__SERVER_STATE_MACHINE_HPP_
 
 namespace ros_raft
 {
