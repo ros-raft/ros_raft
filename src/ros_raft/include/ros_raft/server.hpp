@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <memory>
+#include <vector>
 
 #include "rclcpp/logger.hpp"
 #include "rclcpp/rclcpp.hpp"
