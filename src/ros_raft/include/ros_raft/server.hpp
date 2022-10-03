@@ -21,6 +21,7 @@
 #include "rclcpp/logger.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "ros_raft/state_machine.hpp"
+#include "ros_raft/log_entry.hpp"
 #include "ros_raft_interfaces/srv/append_entries.hpp"
 #include "ros_raft_interfaces/srv/request_vote.hpp"
 
@@ -37,6 +38,8 @@ private:
 
   uint64_t candidate_id_;
   uint64_t current_term_;
+
+  std::vector<LogEntry> log_;
 
   /**
    * @brief Callback group for all services
